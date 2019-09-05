@@ -14,7 +14,6 @@ Function New-ApiGETRequest {
         [String]
         $Server,
 
-        [Parameter(Mandatory)]
         [String]
         $Org,
 
@@ -34,9 +33,13 @@ Function New-ApiGETRequest {
     $Auth = @{
         'password'         = ($Credential.GetNetworkCredential().password)
         'userName'         = ($Credential.username)
-        'organizationName' = $Org
-    } | ConvertTo-Json
+    }
 
+    If ($Org) {
+        $Auth['organizationName'] = $Org
+    }
+
+    $Auth = $Auth | ConvertTo-Json
 
     # Dynamically find and include all available protocols 'Tls12' or higher.
     # Module requires PS 5.1+ so no error checking should be required.

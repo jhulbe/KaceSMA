@@ -43,15 +43,15 @@ Function Get-MachineInventory {
         ConfirmImpact = 'low'
     )]
     param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [string]
         $Server,
 
         [Parameter()]
         [string]
-        $Org = 'Default',
+        $Org,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory)]
         [PSCredential]
         $Credential,
 
@@ -72,7 +72,16 @@ Function Get-MachineInventory {
     }
     Process {
         If ($PSCmdlet.ShouldProcess($Server,"GET $Endpoint")) {
-            New-ApiGETRequest -Server $Server -Endpoint $Endpoint -Org $Org -QueryParameters $QueryParameters -Credential $Credential
+            $IWRSplat = @{
+                Server = $Server
+                Endpoint = $Endpoint
+                QueryParameters = $QueryParameters
+                Credential = $Credential
+            }
+            If ($Org) {
+                $IWRSplat['Org'] = $Org
+            }
+            New-ApiGETRequest @IWRSplat
         }
     }
     End {}
